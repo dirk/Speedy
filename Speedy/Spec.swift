@@ -1,4 +1,6 @@
 import Foundation
+
+/*
 import Nimble
 
 class NimbleAssertionHandlerAdapter: AssertionHandler {
@@ -15,6 +17,7 @@ class NimbleAssertionHandlerAdapter: AssertionHandler {
     println("  \(location.description)\n")
   }
 }
+*/
 
 protocol Spec {
   func spec()
@@ -58,8 +61,7 @@ class SpecRunner {
   }
 
   func prepareForSpec(spec: Spec) {
-    let handler = NimbleAssertionHandlerAdapter(spec)
-
+    // let handler = NimbleAssertionHandlerAdapter(spec)
     // NimbleAssertionHandler = handler
 
     // Silence assertions on this thread
