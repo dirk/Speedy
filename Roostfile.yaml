@@ -6,4 +6,4 @@ framework_search_paths:
 target_type: module
 compiler_options: "-Xlinker {root}/build/Exceptions.o -import-objc-header {root}/Speedy/Support/Exceptions.h"
 precompile_commands:
-  - "make -q"
+  - "make -s"
