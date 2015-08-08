@@ -19,7 +19,7 @@ class NimbleAssertionHandlerAdapter: AssertionHandler {
 }
 */
 
-protocol Spec {
+public protocol Spec {
   func spec()
 }
 
@@ -124,7 +124,7 @@ class SpecRunner {
   }// runGroup
 }
 
-func describe(name: String, definition: () -> ()) {
+public func describe(name: String, definition: () -> ()) {
   let group = Group(name)
   group.parent = currentGroup
   group.parent!.addChild(group)
@@ -137,13 +137,13 @@ func describe(name: String, definition: () -> ()) {
   currentGroup = group.parent!
 }
 
-func it(name: String, block: () -> ()) {
+public func it(name: String, block: () -> ()) {
   let example = Example(name, block)
 
   currentGroup.addChild(example)
 }
 
-func testSpecs(specs: [Spec]) {
+public func testSpecs(specs: [Spec]) {
   RSetupExceptionHandler()
 
   let runner = SpecRunner(specs)
