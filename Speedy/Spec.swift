@@ -135,8 +135,8 @@ class SpecRunner {
           exception = caughtException
         }
 
-        let didError = RTryCatch(tryBlock, catchBlock)
-        let marker   = (didError ? "✓".colorize(.Green) : "✗".colorize(.Red))
+        let didPass = RTryCatch(tryBlock, catchBlock)
+        let marker  = (didPass ? "✓".colorize(.Green) : "✗".colorize(.Red))
 
         println("\(i)\(marker) \(example.name)")
 
@@ -144,7 +144,7 @@ class SpecRunner {
           println("\(i)  \(e)")
         }
         
-        if didError {
+        if !didPass {
           specStatus = .Failed
         }
 
