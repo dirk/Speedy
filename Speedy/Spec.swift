@@ -141,7 +141,7 @@ class SpecRunner {
         println("\(i)\(marker) \(example.name)")
 
         if let e = exception {
-          println("\(i)  \(e)")
+          println("\(i)    \(e)")
         }
         
         if !didPass {
