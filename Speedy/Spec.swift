@@ -23,6 +23,12 @@ public protocol Spec {
   func spec()
 }
 
+private enum SpecStatus {
+  case Unknown
+  case Passed
+  case Failed
+}
+
 
 let SpecRunning = 1
 let SpecDone    = 2
@@ -31,16 +37,24 @@ private var currentGroup: Group! = nil
 
 class SpecRunner {
   let specs: [Spec]
+
+  // Locking while a spec is running on a subthread
   var lock: NSConditionLock!
+  // Status of a spec after it's run
+  private var specStatus: SpecStatus = .Unknown
+
 
   init(_ specs: [Spec]) {
     self.specs = specs
   }
 
   func run() {
+    var hasFailure = false
+
     println("Running \(specs.count) specs:")
 
     for spec in specs {
+      specStatus = .Unknown
       lock = NSConditionLock(condition: SpecRunning)
 
       let thread = NSThread(target: self, selector: "runSpec:", object: (spec as! AnyObject))
@@ -50,14 +64,26 @@ class SpecRunner {
       let timeoutDate = NSDate(timeIntervalSinceNow: timeout)
 
       let didntTimeout = lock.lockWhenCondition(SpecDone, beforeDate: timeoutDate)
+      let didTimeout   = !didntTimeout
 
-      if !didntTimeout {
+      if didTimeout {
         println("Spec timed out")
+        specStatus = .Failed
+      }
+
+      if specStatus == .Failed {
+        hasFailure = true
+      }
+      if specStatus == .Unknown {
+        let name = getClassNameOfObject(spec as! AnyObject)
+        println("Unknown status of spec: \(name)"); exit(2)
       }
 
       // Unlock it so it can be safely deallocated
       lock.unlock()
     }
+
+    exit(hasFailure ? 1 : 0)
   }
 
   func prepareForSpec(spec: Spec) {
@@ -70,6 +96,7 @@ class SpecRunner {
     let className = getClassNameOfObject(spec as! AnyObject)
 
     currentGroup = Group(className)
+    specStatus   = .Passed
   }
 
   @objc func runSpec(aSpec: AnyObject?) {
@@ -109,13 +136,16 @@ class SpecRunner {
         }
 
         let didError = RTryCatch(tryBlock, catchBlock)
-
-        let marker = (didError ? "✓".colorize(.Green) : "✗".colorize(.Red))
+        let marker   = (didError ? "✓".colorize(.Green) : "✗".colorize(.Red))
 
         println("\(i)\(marker) \(example.name)")
 
         if let e = exception {
           println("\(i)  \(e)")
+        }
+        
+        if didError {
+          specStatus = .Failed
         }
 
       case let .ChildGroup(group):
