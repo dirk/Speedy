@@ -95,6 +95,8 @@ class SpecRunner {
     println("\(i)  \(group.name)")
 
     for child in group.children {
+      let i = "\(i)  "
+
       switch child {
       case let .ChildExample(example):
         var exception: NSException! = nil
@@ -113,7 +115,7 @@ class SpecRunner {
         println("\(i)\(marker) \(example.name)")
 
         if let e = exception {
-          println("\(i)    \(e)")
+          println("\(i)  \(e)")
         }
 
       case let .ChildGroup(group):
