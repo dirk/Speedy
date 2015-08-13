@@ -87,9 +87,6 @@ class SpecRunner {
   }
 
   func prepareForSpec(spec: Spec) {
-    // let handler = NimbleAssertionHandlerAdapter(spec)
-    // NimbleAssertionHandler = handler
-
     // Silence assertions on this thread
     RSilentAssertionHandler.setup()
 
@@ -106,12 +103,12 @@ class SpecRunner {
 
     prepareForSpec(spec)
 
-    let topLevelGroup = currentGroup
-
     // Process the definitions
     spec.spec()
 
-    runGroup(topLevelGroup, indent: 0)
+    // Current group will be initialized by #prepareForSpec as a group with
+    // the name of the spec's class.
+    runGroup(currentGroup, indent: 0)
 
     lock.unlockWithCondition(SpecDone)
   }
