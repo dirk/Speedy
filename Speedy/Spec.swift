@@ -35,7 +35,7 @@ let SpecDone    = 2
 
 private var currentGroup: Group! = nil
 
-class SpecRunner {
+class SpecRunner: NSObject {
   let specs: [Spec]
 
   // Locking while a spec is running on a subthread
@@ -57,16 +57,17 @@ class SpecRunner {
       specStatus = .Unknown
       lock = NSConditionLock(condition: SpecRunning)
 
-      let thread = NSThread(target: self, selector: "runSpec:", object: (spec as! AnyObject))
-      thread.start()
+      let block = {
+        self.runSpec(spec as? AnyObject)
+      }
 
       let timeout: NSTimeInterval = 2; // 2 seconds in the future
       let timeoutDate = NSDate(timeIntervalSinceNow: timeout)
 
-      let didntTimeout = lock.lockWhenCondition(SpecDone, beforeDate: timeoutDate)
-      let didTimeout   = !didntTimeout
+      let didntTimeout = SThreading.runBlockOnThread(block,
+                                                     withTimeout:timeoutDate)
 
-      if didTimeout {
+      if !didntTimeout {
         println("Spec timed out")
         specStatus = .Failed
       }
@@ -140,7 +141,7 @@ class SpecRunner {
         if let e = exception {
           println("\(i)    \(e)")
         }
-        
+
         if !didPass {
           specStatus = .Failed
         }

@@ -4,6 +4,6 @@ sources:
 framework_search_paths:
   - vendor/Carthage/Build/Mac
 target_type: module
-compiler_options: "-Xlinker {root}/build/Exceptions.o -import-objc-header {root}/Speedy/Support/Exceptions.h"
+compiler_options: "-Xlinker {root}/build/Exceptions.o -Xlinker {root}/build/Threading.o -import-objc-header {root}/build/Support.h"
 precompile_commands:
   - "make -s"
