@@ -38,8 +38,6 @@ private var currentGroup: Group! = nil
 class SpecRunner: NSObject {
   let specs: [Spec]
 
-  // Locking while a spec is running on a subthread
-  var lock: NSConditionLock!
   // Status of a spec after it's run
   private var specStatus: SpecStatus = .Unknown
 
@@ -55,7 +53,6 @@ class SpecRunner: NSObject {
 
     for spec in specs {
       specStatus = .Unknown
-      lock = NSConditionLock(condition: SpecRunning)
 
       let block = {
         self.runSpec(spec as? AnyObject)
@@ -79,9 +76,6 @@ class SpecRunner: NSObject {
         let name = getClassNameOfObject(spec as! AnyObject)
         println("Unknown status of spec: \(name)"); exit(2)
       }
-
-      // Unlock it so it can be safely deallocated
-      lock.unlock()
     }
 
     exit(hasFailure ? 1 : 0)
@@ -98,8 +92,6 @@ class SpecRunner: NSObject {
   }
 
   @objc func runSpec(aSpec: AnyObject?) {
-    assert(lock.tryLock() == true, "Unable to acquire lock")
-
     let spec = aSpec as! Spec
 
     prepareForSpec(spec)
@@ -110,8 +102,6 @@ class SpecRunner: NSObject {
     // Current group will be initialized by #prepareForSpec as a group with
     // the name of the spec's class.
     runGroup(currentGroup, indent: 0)
-
-    lock.unlockWithCondition(SpecDone)
   }
 
   func runGroup(group: Group, indent: Int) {
