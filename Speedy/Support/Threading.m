@@ -2,14 +2,9 @@
 
 #import "Threading.h"
 
-@interface SThreadingThread : NSObject
-@property (strong) NSLock *lock;
-@end
-
 @interface SThreading ()
 + (void)runInThread:(SThreadingThread *)thread;
 @end
-
 
 @implementation SThreading
 
