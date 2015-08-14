@@ -4,6 +4,8 @@ typedef void (^SThreadingBlock)(void);
 
 @interface SThreadingThread : NSObject
 @property (strong) NSLock *lock;
+@property (strong) NSThread *thread;
+- (instancetype)initWithLock:(NSLock *)lock thread:(NSThread *)thread;
 @end
 
 @interface SThreading : NSObject

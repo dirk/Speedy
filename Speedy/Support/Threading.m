@@ -3,6 +3,16 @@
 #import "Threading.h"
 
 @implementation SThreadingThread
+- (instancetype)initWithLock:(NSLock *)lock thread:(NSThread *)thread
+{
+  self = [super init];
+  if (self)
+  {
+    self.lock = lock;
+    self.thread = thread;
+  }
+  return self;
+}
 @end
 
 @interface SThreading ()
@@ -14,14 +24,14 @@
 + (NSLock *)launchLockingThreadWithBlock:(SThreadingBlock)block
 {
   NSLock *lock = [NSLock new];
-  NSThread *thread = [NSThread new];
+  NSThread *targetThread = [NSThread new];
 
-  SThreadingThread *param = [SThreadingThread new];
-  param.lock = lock;
+  SThreadingThread *thread = [[SThreadingThread alloc] initWithLock:lock
+                                                             thread:targetThread];
 
   [self performSelector:@selector(runInThread:)
-               onThread:thread
-             withObject:param
+               onThread:targetThread
+             withObject:thread
           waitUntilDone:NO];
 
   return lock;
