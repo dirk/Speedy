@@ -2,6 +2,9 @@
 
 #import "Threading.h"
 
+@implementation SThreadingThread
+@end
+
 @interface SThreading ()
 + (void)runInThread:(SThreadingThread *)thread;
 @end
