@@ -3,13 +3,12 @@
 #import "Threading.h"
 
 @implementation SThreadingThread
-- (instancetype)initWithLock:(NSLock *)lock thread:(NSThread *)thread block:(SThreadingBlock)block
+- (instancetype)initWithLock:(NSConditionLock *)lock block:(SThreadingBlock)block
 {
   self = [super init];
   if (self)
   {
     self.lock = lock;
-    self.thread = thread;
     self.block = block;
   }
   return self;
@@ -17,55 +16,54 @@
 @end
 
 @interface SThreading ()
-+ (void)runInThread:(SThreadingThread *)thread;
+- (void)runInThread:(SThreadingThread *)thread;
 @end
 
 @implementation SThreading
 
-+ (NSLock *)launchLockingThreadWithBlock:(SThreadingBlock)block
+- (NSConditionLock *)launchLockingThreadWithBlock:(SThreadingBlock)block
 {
-  NSLock *lock = [NSLock new];
-  NSThread *targetThread = [NSThread new];
+  NSConditionLock *lock = [[NSConditionLock alloc] initWithCondition:SThreadRunning];
 
   SThreadingThread *thread = [[SThreadingThread alloc] initWithLock:lock
-                                                             thread:targetThread
                                                               block:block];
 
-  [self performSelector:@selector(runInThread:)
-               onThread:targetThread
-             withObject:thread
-          waitUntilDone:NO];
+  NSThread *targetThread = [[NSThread alloc] initWithTarget:self
+                                                   selector:@selector(runInThread:)
+                                                     object:thread];
+
+  [targetThread start];
 
   return lock;
 }
 
-+ (void)runBlockOnThread:(SThreadingBlock)block
+- (void)runBlockOnThread:(SThreadingBlock)block
 {
-  NSLock *lock = [self launchLockingThreadWithBlock:block];
+  NSConditionLock *lock = [self launchLockingThreadWithBlock:block];
 
   // Block until the lock is unlocked by the thread
-  [lock lock];
+  [lock lockWhenCondition:SThreadDone];
 }
 
-+ (BOOL)runBlockOnThread:(SThreadingBlock)block withTimeout:(NSDate *)timeoutDate
+- (BOOL)runBlockOnThread:(SThreadingBlock)block withTimeout:(NSDate *)timeoutDate
 {
-  NSLock *lock = [self launchLockingThreadWithBlock:block];
+  NSConditionLock *lock = [self launchLockingThreadWithBlock:block];
 
-  BOOL didntTimeout = [lock lockBeforeDate:timeoutDate];
+  BOOL didntTimeout = [lock lockWhenCondition:SThreadDone beforeDate:timeoutDate];
 
   return didntTimeout;
 }
 
-+ (void)runInThread:(SThreadingThread *)thread
+- (void)runInThread:(SThreadingThread *)thread
 {
-  NSLock *lock = thread.lock;
+  NSConditionLock *lock = thread.lock;
   SThreadingBlock block = thread.block;
 
-  NSAssert([lock tryLock], @"Unable to acquire initial lock");
+  NSAssert([lock tryLock] == YES, @"Unable to acquire initial lock");
 
   block();
 
-  [lock unlock];
+  [lock unlockWithCondition:SThreadDone];
 }
 
 @end

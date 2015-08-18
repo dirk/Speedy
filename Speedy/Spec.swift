@@ -51,9 +51,11 @@ class SpecRunner: NSObject {
   // Status of a spec after it's run
   private var specStatus: SpecStatus = .Unknown
 
+  private let threadingManager: SThreading
 
   init(_ specs: [Spec]) {
     self.specs = specs
+    self.threadingManager = SThreading()
   }
 
   func run() {
@@ -64,15 +66,15 @@ class SpecRunner: NSObject {
     for spec in specs {
       specStatus = .Unknown
 
-      let block = {
+      let block = { () -> () in
         self.runSpec(SpecBox(spec, self))
       }
 
       let timeout: NSTimeInterval = 2; // 2 seconds in the future
       let timeoutDate = NSDate(timeIntervalSinceNow: timeout)
 
-      let didntTimeout = SThreading.runBlockOnThread(block,
-                                                     withTimeout:timeoutDate)
+      let didntTimeout = threadingManager.runBlockOnThread(block,
+                                                           withTimeout:timeoutDate)
 
       if !didntTimeout {
         println("Spec timed out")
