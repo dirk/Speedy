@@ -3,13 +3,14 @@
 #import "Threading.h"
 
 @implementation SThreadingThread
-- (instancetype)initWithLock:(NSLock *)lock thread:(NSThread *)thread
+- (instancetype)initWithLock:(NSLock *)lock thread:(NSThread *)thread block:(SThreadingBlock)block
 {
   self = [super init];
   if (self)
   {
     self.lock = lock;
     self.thread = thread;
+    self.block = block;
   }
   return self;
 }
@@ -27,7 +28,8 @@
   NSThread *targetThread = [NSThread new];
 
   SThreadingThread *thread = [[SThreadingThread alloc] initWithLock:lock
-                                                             thread:targetThread];
+                                                             thread:targetThread
+                                                              block:block];
 
   [self performSelector:@selector(runInThread:)
                onThread:targetThread
@@ -57,8 +59,11 @@
 + (void)runInThread:(SThreadingThread *)thread
 {
   NSLock *lock = thread.lock;
+  SThreadingBlock block = thread.block;
 
   NSAssert([lock tryLock], @"Unable to acquire initial lock");
+
+  block();
 
   [lock unlock];
 }
