@@ -91,20 +91,21 @@ class SpecRunner: NSObject {
     exit(hasFailure ? 1 : 0)
   }
 
-  func prepareForSpec(spec: Spec) {
+  func prepareForSpec(spec: Spec, _ runner: SpecRunner) {
     // Silence assertions on this thread
     RSilentAssertionHandler.setup()
 
     let className = getClassNameOfObject(spec as! AnyObject)
 
-    currentGroup = Group(className)
-    specStatus   = .Passed
+    currentGroup      = Group(className)
+    runner.specStatus = .Passed
   }
 
   @objc func runSpec(specBox: SpecBox) {
-    let spec = specBox.spec
+    let spec   = specBox.spec
+    let runner = specBox.runner
 
-    prepareForSpec(spec)
+    prepareForSpec(spec, runner)
 
     // Process the definitions
     spec.spec()
