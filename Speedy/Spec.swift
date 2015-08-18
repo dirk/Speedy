@@ -19,7 +19,7 @@ class NimbleAssertionHandlerAdapter: AssertionHandler {
 }
 */
 
-public protocol Spec {
+@objc public protocol Spec {
   func spec()
 }
 
@@ -55,7 +55,7 @@ class SpecRunner: NSObject {
       specStatus = .Unknown
 
       let block = {
-        self.runSpec(spec as? AnyObject)
+        self.runSpec(spec)
       }
 
       let timeout: NSTimeInterval = 2; // 2 seconds in the future
@@ -73,7 +73,7 @@ class SpecRunner: NSObject {
         hasFailure = true
       }
       if specStatus == .Unknown {
-        let name = getClassNameOfObject(spec as! AnyObject)
+        let name = getClassNameOfObject(spec)
         println("Unknown status of spec: \(name)"); exit(2)
       }
     }
@@ -85,15 +85,13 @@ class SpecRunner: NSObject {
     // Silence assertions on this thread
     RSilentAssertionHandler.setup()
 
-    let className = getClassNameOfObject(spec as! AnyObject)
+    let className = getClassNameOfObject(spec)
 
     currentGroup = Group(className)
     specStatus   = .Passed
   }
 
-  @objc func runSpec(aSpec: AnyObject?) {
-    let spec = aSpec as! Spec
-
+  @objc func runSpec(spec: Spec) {
     prepareForSpec(spec)
 
     // Process the definitions
