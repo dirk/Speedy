@@ -25,11 +25,9 @@ public protocol Spec {
 
 @objc class SpecBox {
   let spec: Spec
-  let runner: SpecRunner
 
-  init(_ aSpec: Spec, _ aRunner: SpecRunner) {
+  init(_ aSpec: Spec) {
     spec = aSpec
-    runner = aRunner
   }
 }
 
@@ -67,7 +65,7 @@ class SpecRunner: NSObject {
       specStatus = .Unknown
 
       let block = { () -> () in
-        self.runSpec(SpecBox(spec, self))
+        self.runSpec(SpecBox(spec))
       }
 
       let timeout: NSTimeInterval = 2; // 2 seconds in the future
@@ -93,21 +91,20 @@ class SpecRunner: NSObject {
     exit(hasFailure ? 1 : 0)
   }
 
-  func prepareForSpec(spec: Spec, _ runner: SpecRunner) {
+  func prepareForSpec(spec: Spec) {
     // Silence assertions on this thread
     RSilentAssertionHandler.setup()
 
     let className = getClassNameOfObject(spec as! AnyObject)
 
-    currentGroup      = Group(className)
-    runner.specStatus = .Passed
+    currentGroup = Group(className)
+    specStatus   = .Passed
   }
 
   @objc func runSpec(specBox: SpecBox) {
-    let spec   = specBox.spec
-    let runner = specBox.runner
+    let spec = specBox.spec
 
-    prepareForSpec(spec, runner)
+    prepareForSpec(spec)
 
     // Process the definitions
     spec.spec()
