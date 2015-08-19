@@ -1,23 +1,5 @@
 import Foundation
-
-/*
 import Nimble
-
-class NimbleAssertionHandlerAdapter: AssertionHandler {
-  let spec: Spec
-
-  init(_ spec: Spec) {
-    self.spec = spec
-  }
-
-  func assert(assertion: Bool, message: FailureMessage, location: SourceLocation) {
-    if assertion { return }
-
-    println(message.stringValue)
-    println("  \(location.description)\n")
-  }
-}
-*/
 
 public protocol Spec {
   func spec()
@@ -37,9 +19,6 @@ private enum SpecStatus {
   case Failed
 }
 
-
-let SpecRunning = 1
-let SpecDone    = 2
 
 private var currentGroup: Group! = nil
 
@@ -174,7 +153,7 @@ public func it(name: String, block: () -> ()) {
 }
 
 public func testSpecs(specs: [Spec]) {
-  RSetupExceptionHandler()
+  NimbleAssertionHandler = NimblePlainAssertionHandler()
 
   let runner = SpecRunner(specs)
 
