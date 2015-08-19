@@ -1,4 +1,4 @@
-class Example {
+public class Example {
   let name: String
   let block: () -> ()
 
@@ -9,11 +9,18 @@ class Example {
 }
 
 
-class Group {
+public class Group {
 
   enum Child {
     case ChildGroup(Group)
     case ChildExample(Example)
+
+    func value() -> AnyObject {
+      switch self {
+      case let .ChildGroup(group): return group
+      case let .ChildExample(example): return example
+      }
+    }
   }
 
   let name: String
@@ -26,10 +33,14 @@ class Group {
     self.name = name
   }
 
-  func addChild(group: Group) {
-    children.append(.ChildGroup(group))
-  }
-  func addChild(example: Example) {
-    children.append(.ChildExample(example))
+  func addChild(child: AnyObject) {
+    switch child {
+    case let group as Group:
+      children.append(Child.ChildGroup(group))
+    case let example as Example:
+      children.append(Child.ChildExample(example))
+    default:
+      assert(false, "Unreachable!")
+    }
   }
 }

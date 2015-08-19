@@ -22,6 +22,13 @@ private enum SpecStatus {
 
 private var currentGroup: Group! = nil
 
+public func setCurrentGroup(group: Group) {
+  currentGroup = group
+}
+public func getCurrentGroup() -> Group {
+  return currentGroup
+}
+
 class SpecRunner: NSObject {
   let specs: [Spec]
 
