@@ -27,6 +27,7 @@ public class Group {
   var children = [Child]()
   var parent: Group? = nil
   var beforeEachHooks = [Hook]()
+  var afterEachHooks  = [Hook]()
 
   init(_ name: String) {
     self.name = name
@@ -47,6 +48,8 @@ public class Group {
     switch hook.kind {
     case .BeforeEach:
       beforeEachHooks.append(hook)
+    case .AfterEach:
+      afterEachHooks.append(hook)
     default:
       assert(false, "Unreachable!")
     }

@@ -138,6 +138,9 @@ class SpecRunner: NSObject {
         runGroup(group, indent: indent + 1)
 
       }// switch child
+
+      for hook in group.afterEachHooks { hook.block() }
+
     }// for child in children
   }// runGroup
 }
@@ -162,9 +165,11 @@ public func it(name: String, block: () -> ()) {
 }
 
 public func beforeEach(block: () -> ()) {
-  let hook = Hook(.BeforeEach, block)
+  currentGroup.addHook(Hook(.BeforeEach, block))
+}
 
-  currentGroup.addHook(hook)
+public func afterEach(block: () -> ()) {
+  currentGroup.addHook(Hook(.AfterEach, block))
 }
 
 public func testSpecs(specs: [Spec]) {

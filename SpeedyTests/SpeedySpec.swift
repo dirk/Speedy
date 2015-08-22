@@ -5,9 +5,13 @@ class SpeedySpec: Spec {
     describe("Group") {
       describe("having a current group") {
         var beforeEachCount = 0
+        var afterEachCount  = 0
 
         beforeEach {
           beforeEachCount += 1
+        }
+        afterEach {
+          afterEachCount += 1
         }
 
         it("should allow defining an Example") {
@@ -38,8 +42,12 @@ class SpeedySpec: Spec {
           setCurrentGroup(original)
         }
 
-        it("should called the beforeEach the correct number of times") {
+        it("should have called the beforeEach the correct number of times") {
           expect(beforeEachCount).to(equal(2))
+        }
+
+        it("should have called the afterEach the correct number of times") {
+          expect(afterEachCount).to(equal(2))
         }
       }
     }
