@@ -1,7 +1,9 @@
 public class Hook {
   enum Kind {
     case BeforeEach
+    case BeforeAll
     case AfterEach
+    case AfterAll
   }
 
   let kind: Kind

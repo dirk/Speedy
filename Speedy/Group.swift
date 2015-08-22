@@ -28,6 +28,8 @@ public class Group {
   var parent: Group? = nil
   var beforeEachHooks = [Hook]()
   var afterEachHooks  = [Hook]()
+  var beforeAllHooks  = [Hook]()
+  var afterAllHooks   = [Hook]()
 
   init(_ name: String) {
     self.name = name
@@ -50,6 +52,10 @@ public class Group {
       beforeEachHooks.append(hook)
     case .AfterEach:
       afterEachHooks.append(hook)
+    case .BeforeAll:
+      beforeAllHooks.append(hook)
+    case .AfterAll:
+      afterAllHooks.append(hook)
     default:
       assert(false, "Unreachable!")
     }

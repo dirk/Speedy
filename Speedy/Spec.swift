@@ -105,6 +105,8 @@ class SpecRunner: NSObject {
 
     println("\(i)  \(group.name)")
 
+    for hook in group.beforeAllHooks { hook.block() }
+
     for child in group.children {
       let i = "\(i)  "
 
@@ -142,6 +144,9 @@ class SpecRunner: NSObject {
       for hook in group.afterEachHooks { hook.block() }
 
     }// for child in children
+
+    for hook in group.afterAllHooks { hook.block() }
+
   }// runGroup
 }
 
@@ -170,6 +175,14 @@ public func beforeEach(block: () -> ()) {
 
 public func afterEach(block: () -> ()) {
   currentGroup.addHook(Hook(.AfterEach, block))
+}
+
+public func beforeAll(block: () -> ()) {
+  currentGroup.addHook(Hook(.BeforeAll, block))
+}
+
+public func afterAll(block: () -> ()) {
+  currentGroup.addHook(Hook(.AfterAll, block))
 }
 
 public func testSpecs(specs: [Spec]) {
