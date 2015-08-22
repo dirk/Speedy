@@ -108,6 +108,8 @@ class SpecRunner: NSObject {
     for child in group.children {
       let i = "\(i)  "
 
+      for hook in group.beforeEachHooks { hook.block() }
+
       switch child {
       case let .ChildExample(example):
         var exception: NSException! = nil
@@ -157,6 +159,12 @@ public func it(name: String, block: () -> ()) {
   let example = Example(name, block)
 
   currentGroup.addChild(example)
+}
+
+public func beforeEach(block: () -> ()) {
+  let hook = Hook(.BeforeEach, block)
+
+  currentGroup.addHook(hook)
 }
 
 public func testSpecs(specs: [Spec]) {

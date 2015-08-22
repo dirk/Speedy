@@ -4,6 +4,12 @@ class SpeedySpec: Spec {
   func spec() {
     describe("Group") {
       describe("having a current group") {
+        var beforeEachCount = 0
+
+        beforeEach {
+          beforeEachCount += 1
+        }
+
         it("should allow defining an Example") {
           let original = getCurrentGroup()
           let testGroup = Group("a group")
@@ -30,6 +36,10 @@ class SpeedySpec: Spec {
 
           // Restore the original after we're done
           setCurrentGroup(original)
+        }
+
+        it("should called the beforeEach the correct number of times") {
+          expect(beforeEachCount).to(equal(2))
         }
       }
     }

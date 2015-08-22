@@ -28,6 +28,7 @@ public class Group {
   var parent: Group? = nil
 
   var currentIndex: Int = 0
+  var beforeEachHooks = [Hook]()
 
   init(_ name: String) {
     self.name = name
@@ -39,6 +40,15 @@ public class Group {
       children.append(Child.ChildGroup(group))
     case let example as Example:
       children.append(Child.ChildExample(example))
+    default:
+      assert(false, "Unreachable!")
+    }
+  }
+
+  func addHook(hook: Hook) {
+    switch hook.kind {
+    case .BeforeEach:
+      beforeEachHooks.append(hook)
     default:
       assert(false, "Unreachable!")
     }
