@@ -26,8 +26,6 @@ public class Group {
   let name: String
   var children = [Child]()
   var parent: Group? = nil
-
-  var currentIndex: Int = 0
   var beforeEachHooks = [Hook]()
 
   init(_ name: String) {
