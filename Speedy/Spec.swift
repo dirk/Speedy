@@ -188,7 +188,7 @@ public func afterAll(block: () -> ()) {
 public func testSpecs(specs: [Spec]) {
   NimbleAssertionHandler = NimblePlainAssertionHandler()
 
-  let runner = SpecRunner(specs)
+  let commandLineRunner = CommandLineRunner(specs)
 
-  runner.run()
+  commandLineRunner.runSpecs()
 }
