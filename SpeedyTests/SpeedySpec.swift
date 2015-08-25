@@ -5,11 +5,11 @@ class SpeedySpec: Spec {
     describe("Group") {
       describe("having a current group") {
         it("should allow defining an Example") {
-          let original = getCurrentGroup()
+          let original = SpeedyGetCurrentGroup()
           let testGroup = Group("a group")
           expect(testGroup.name).to(equal("a group"))
 
-          setCurrentGroup(testGroup)
+          SpeedySetCurrentGroup(testGroup)
 
           var exampleRan = false
 
@@ -29,7 +29,7 @@ class SpeedySpec: Spec {
           expect(exampleRan).to(beTrue())
 
           // Restore the original after we're done
-          setCurrentGroup(original)
+          SpeedySetCurrentGroup(original)
         }
       }
     }// describe Group
