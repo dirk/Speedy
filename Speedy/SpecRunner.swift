@@ -17,6 +17,7 @@ private enum SpecStatus {
 
 class SpecRunner: NSObject {
   let specs: [Spec]
+  var onlyContainingName: String?
 
   // Status of a spec after it's run
   private var specStatus: SpecStatus = .Unknown
@@ -102,6 +103,12 @@ class SpecRunner: NSObject {
       switch child {
       case let .ChildExample(example):
         var exception: NSException! = nil
+
+        if let name = self.onlyContainingName {
+          if example.name.rangeOfString(name) == nil {
+            continue
+          }
+        }
 
         let tryBlock = {
           example.block()
