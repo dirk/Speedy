@@ -12,18 +12,15 @@ class CommandLineRunner {
     var args = [String](Process.arguments[1..<Process.arguments.count])
 
     let help: Bool = contains(args, "-h") || contains(args, "--help")
-    let matchingNameShort = findParameter(args, "-n")
-    let matchingNameLong  = findParameter(args, "--name")
+    let containingName = findParameter(args, short: "-n", long: "--name")
 
     if help {
       return printHelp(executable)
 
-    } else if let name = matchingNameShort {
-      runSpecs(matchingName: name)
-    } else if let name = matchingNameLong {
-      runSpecs(matchingName: name)
+    } else if let name = containingName {
+      runSpecs(containingName: name)
     } else {
-      runSpecs(matchingName: nil)
+      runSpecs(containingName: nil)
     }
   }// run()
 
@@ -35,9 +32,22 @@ class CommandLineRunner {
     }
   }
 
-  func runSpecs(#matchingName: String?) {
+  func findParameter(arguments: [String],
+                     short: String,
+                     long: String) -> String?
+  {
+    if let index = find(arguments, short) {
+      return arguments[index + 1]
+    } else if let index = find(arguments, long) {
+      return arguments[index + 1]
+    } else {
+      return nil
+    }
+  }
+
+  func runSpecs(#containingName: String?) {
     let specRunner = SpecRunner(specs)
-    specRunner.onlyContainingName = matchingName
+    specRunner.onlyContainingName = containingName
     specRunner.run()
   }
 
@@ -46,8 +56,7 @@ class CommandLineRunner {
     println("")
     println("Options:")
     println("  -h, --help         Print this help and exit")
-    println("  -n, --name STRING  Only run specs whose fully qualified name contains")
-    println("                     the given string")
+    println("  -n, --name STRING  Only run examples whose name contains string")
     println("")
   }
 }
