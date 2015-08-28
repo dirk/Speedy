@@ -2,6 +2,7 @@ import Foundation
 
 class CommandLineRunner {
   let specs: [Spec]
+  var options = SpecOptions()
 
   init(_ specs: [Spec]) {
     self.specs = specs
@@ -16,12 +17,11 @@ class CommandLineRunner {
 
     if help {
       return printHelp(executable)
-
     } else if let name = containingName {
-      runSpecs(containingName: name)
-    } else {
-      runSpecs(containingName: nil)
+      options.onlyContainingName = name
     }
+
+    runSpecs()
   }// run()
 
   func findParameter(arguments: [String], _ name: String) -> String? {
@@ -45,9 +45,8 @@ class CommandLineRunner {
     }
   }
 
-  func runSpecs(#containingName: String?) {
-    let specRunner = SpecRunner(specs)
-    specRunner.onlyContainingName = containingName
+  func runSpecs() {
+    let specRunner = SpecRunner(specs, options: options)
     specRunner.run()
   }
 

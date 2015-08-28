@@ -15,17 +15,26 @@ private enum SpecStatus {
   case Failed
 }
 
+struct SpecOptions {
+  var onlyContainingName: String?
+
+  init() {
+    onlyContainingName = nil
+  }
+}
+
 class SpecRunner: NSObject {
   let specs: [Spec]
-  var onlyContainingName: String?
+  var options: SpecOptions
 
   // Status of a spec after it's run
   private var specStatus: SpecStatus = .Unknown
 
   private let threadingManager: SThreading
 
-  init(_ specs: [Spec]) {
+  init(_ specs: [Spec], options: SpecOptions) {
     self.specs = specs
+    self.options = options
     self.threadingManager = SThreading()
   }
 
@@ -104,7 +113,7 @@ class SpecRunner: NSObject {
       case let .ChildExample(example):
         var exception: NSException! = nil
 
-        if let name = self.onlyContainingName {
+        if let name = self.options.onlyContainingName {
           if example.name.rangeOfString(name) == nil {
             continue
           }
