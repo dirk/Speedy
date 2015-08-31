@@ -4,8 +4,8 @@ sources:
 framework_search_paths:
   - vendor/Carthage/Build/Mac
 target_type: module
-compiler_options: "-Xlinker {root}/build/Exceptions.o -Xlinker {root}/build/Threading.o"
-linker_options: "-import-objc-header {root}/build/Support.h"
+compiler_options: "-import-objc-header {root}/build/Support.h"
+linker_options: "{root}/build/Exceptions.o {root}/build/Threading.o"
 precompile_commands:
   - "make -s"
 
