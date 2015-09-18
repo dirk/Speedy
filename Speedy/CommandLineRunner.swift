@@ -10,9 +10,9 @@ class CommandLineRunner {
 
   func run() {
     let executable = Process.arguments[0]
-    var args = [String](Process.arguments[1..<Process.arguments.count])
+    let args = [String](Process.arguments[1..<Process.arguments.count])
 
-    let help: Bool = contains(args, "-h") || contains(args, "--help")
+    let help: Bool = args.contains("-h") || args.contains("--help")
     let containingName = findParameter(args, short: "-n", long: "--name")
 
     if help {
@@ -25,7 +25,7 @@ class CommandLineRunner {
   }// run()
 
   func findParameter(arguments: [String], _ name: String) -> String? {
-    if let index = find(arguments, name) {
+    if let index = arguments.indexOf(name) {
       return arguments[index + 1]
     } else {
       return nil
@@ -36,9 +36,9 @@ class CommandLineRunner {
                      short: String,
                      long: String) -> String?
   {
-    if let index = find(arguments, short) {
+    if let index = arguments.indexOf(short) {
       return arguments[index + 1]
-    } else if let index = find(arguments, long) {
+    } else if let index = arguments.indexOf(long) {
       return arguments[index + 1]
     } else {
       return nil
@@ -51,11 +51,11 @@ class CommandLineRunner {
   }
 
   private func printHelp(executable: String) {
-    println("Usage: \(executable) [-h]")
-    println("")
-    println("Options:")
-    println("  -h, --help         Print this help and exit")
-    println("  -n, --name STRING  Only run examples whose name contains string")
-    println("")
+    print("Usage: \(executable) [-h]")
+    print("")
+    print("Options:")
+    print("  -h, --help         Print this help and exit")
+    print("  -n, --name STRING  Only run examples whose name contains string")
+    print("")
   }
 }

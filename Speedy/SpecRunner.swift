@@ -1,7 +1,7 @@
 import Foundation
 import Nimble
 
-@objc class SpecBox {
+@objc class SpecBox: NSObject {
   let spec: Spec
 
   init(_ aSpec: Spec) {
@@ -41,7 +41,7 @@ class SpecRunner: NSObject {
   func run() {
     var hasFailure = false
 
-    println("Running \(specs.count) specs:")
+    print("Running \(specs.count) specs:")
 
     for spec in specs {
       specStatus = .Unknown
@@ -57,7 +57,7 @@ class SpecRunner: NSObject {
                                                            withTimeout:timeoutDate)
 
       if !didntTimeout {
-        println("Spec timed out")
+        print("Spec timed out")
         specStatus = .Failed
       }
 
@@ -66,7 +66,7 @@ class SpecRunner: NSObject {
       }
       if specStatus == .Unknown {
         let name = getClassNameOfObject(spec as! AnyObject)
-        println("Unknown status of spec: \(name)"); exit(2)
+        print("Unknown status of spec: \(name)"); exit(2)
       }
     }
 
@@ -98,9 +98,10 @@ class SpecRunner: NSObject {
   }
 
   func runGroup(group: Group, indent: Int) {
-    let i = " ".repeat(indent * 2)
+    let indentRepeat = Repeat(count: indent * 2, repeatedValue: " ")
+    let i = indentRepeat.joinWithSeparator("")
 
-    println("\(i)  \(group.name)")
+    print("\(i)  \(group.name)")
 
     for hook in group.beforeAllHooks { hook.block() }
 
@@ -129,10 +130,10 @@ class SpecRunner: NSObject {
         let didPass = RTryCatch(tryBlock, catchBlock)
         let marker  = (didPass ? "✓".colorize(.Green) : "✗".colorize(.Red))
 
-        println("\(i)\(marker) \(example.name)")
+        print("\(i)\(marker) \(example.name)")
 
         if let e = exception {
-          println("\(i)    \(e)")
+          print("\(i)    \(e)")
         }
 
         if !didPass {

@@ -56,8 +56,6 @@ public class Group {
       beforeAllHooks.append(hook)
     case .AfterAll:
       afterAllHooks.append(hook)
-    default:
-      assert(false, "Unreachable!")
     }
   }
 }
